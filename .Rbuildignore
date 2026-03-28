@@ -1,0 +1,4 @@
+^\.DS_Store$
+^\.\.Rcheck$
+^.*\.Rproj$
+^\.Rproj\.user$

@@ -1,0 +1,22 @@
+Package: dispatchr
+Title: Lightweight Outbound Messaging for Agentic Workflows
+Version: 0.0.0.9000
+Authors@R: 
+    person("Oliver", "Zhou", email = "oliver.yxzhou@gmail.com", role = c("aut", "cre"))
+Author: Oliver Zhou [aut, cre]
+Maintainer: Oliver Zhou <oliver.yxzhou@gmail.com>
+Description: Send outbound messages through Gmail SMTP, X, and Telegram.
+    The package is intentionally small and focused on message delivery for
+    agentic workflows rather than broader communication management.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
+Imports:
+    emayili,
+    httr,
+    jsonlite
+Suggests:
+    testthat (>= 3.0.0),
+    withr
+Config/testthat/edition: 3
