@@ -24,16 +24,25 @@ send_email(
 
 \item{config}{Optional named list with SMTP configuration. It may include
 \code{connecttimeout} and \code{timeout} in seconds and \code{max_times} for the maximum
-number of send attempts. Defaults are 10, 30, and 1 respectively.}
+number of send attempts. Defaults are 10, 30, and 1 respectively. Set
+\code{smtp_debug = TRUE} to emit sanitized diagnostics; credentials, addresses,
+and message content are not logged. The default \code{email_transport = "emayili"} uses \code{emayili::server()} with one attempt and aggregate stage
+diagnostics. Set \code{email_transport = "curl"} to opt into detailed SMTP-stage
+diagnostics. Curl retries are limited to failures known to occur before
+SMTP message submission.}
 
 \item{reply_to_message_id}{Optional \code{Message-ID} of the message being replied
 to. Sets \code{In-Reply-To} and \code{References} headers and prefixes the subject
 with \verb{Re:}. This does not retrieve the original message.}
 }
 \value{
-A \code{dispatchr_result} list with send metadata, backend response, and
-\code{message_id}, the ID assigned to this outgoing message. The ID is assigned
-before sending and is available even if the send fails.
+A \code{dispatchr_result} list with send metadata, backend response,
+\code{message_id}, \code{delivery_status}, \code{delivery_uncertain}, and \code{smtp_stage}.
+With the curl transport, a timeout before the complete payload has been
+supplied has \code{delivery_status = "not_submitted"}; a timeout after the full
+payload is supplied but before final SMTP acceptance has \code{delivery_status = "uncertain"}. The emayili transport cannot identify the timeout stage and
+treats a send timeout as uncertain. Check the provider's Sent folder before
+retrying an uncertain result.
 }
 \description{
 Sends an email through SMTP using \code{emayili}. The current package defaults to
@@ -50,6 +59,8 @@ resolved from environment variables:
 \item \code{DISPATCHR_EMAIL_CONNECTTIMEOUT} (default: 10 seconds)
 \item \code{DISPATCHR_EMAIL_TIMEOUT} (default: 30 seconds)
 \item \code{DISPATCHR_EMAIL_MAX_TIMES} (default: 1 attempt)
+\item \code{DISPATCHR_EMAIL_SMTP_DEBUG} (default: \code{FALSE})
+\item \code{DISPATCHR_EMAIL_TRANSPORT} (default: \code{emayili}; alternative: \code{curl})
 }
 }
 \examples{

@@ -58,7 +58,10 @@
                               response = NULL,
                               error = NULL,
                               rate_limit = NULL,
-                              message_id = NULL) {
+                              message_id = NULL,
+                              delivery_uncertain = NULL,
+                              smtp_stage = NULL,
+                              delivery_status = NULL) {
   structure(
     list(
       ok = isTRUE(ok),
@@ -68,7 +71,10 @@
       response = response,
       error = error,
       rate_limit = rate_limit,
-      message_id = message_id
+      message_id = message_id,
+      delivery_uncertain = delivery_uncertain,
+      smtp_stage = smtp_stage,
+      delivery_status = delivery_status
     ),
     class = "dispatchr_result"
   )

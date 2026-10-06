@@ -37,6 +37,7 @@ Optional fields:
 - `connecttimeout` defaults to `10` seconds
 - `timeout` defaults to `30` seconds
 - `max_times` defaults to `1` attempt
+- `email_transport` defaults to `"emayili"`; set it to `"curl"` for detailed SMTP-stage diagnostics
 
 Environment variables:
 
@@ -47,6 +48,35 @@ Environment variables:
 - `DISPATCHR_EMAIL_CONNECTTIMEOUT`
 - `DISPATCHR_EMAIL_TIMEOUT`
 - `DISPATCHR_EMAIL_MAX_TIMES`
+- `DISPATCHR_EMAIL_SMTP_DEBUG` (defaults to `FALSE`)
+- `DISPATCHR_EMAIL_TRANSPORT` (defaults to `emayili`)
+
+Set `smtp_debug = TRUE` in the email `config` to print sanitized diagnostics.
+The default emayili transport reports only aggregate send status; set
+`email_transport = "curl"` to see SMTP transaction stages, reply codes, and
+elapsed time. The curl transport distinguishes authentication,
+MAIL FROM, RCPT TO, DATA permission, message-data start, complete payload
+supplied to libcurl, SMTP DATA terminator written, and final acceptance.
+Diagnostics do not include event payloads, credentials, addresses, headers, or
+message content.
+With the curl transport, timeouts before the complete payload is supplied have
+`delivery_status = "not_submitted"`; timeouts after all payload bytes are
+supplied but before final SMTP acceptance have `delivery_status = "uncertain"`.
+The emayili transport cannot determine the timeout stage and marks send
+timeouts as uncertain.
+Check the provider's Sent folder before retrying an uncertain result to avoid
+duplicates.
+The default emayili transport makes one attempt. Curl retries configured with
+`max_times` are limited to failures known to occur before SMTP message submission.
+
+To explicitly run the live Zoho A/B comparison, set
+`DISPATCHR_SMTP_COMPARE=1`, `DISPATCHR_SMTP_COMPARE_TO`,
+`DISPATCHR_ZOHO_EMAIL`, and `DISPATCHR_ZOHO_PASSWORD`, then run
+`Rscript -e 'devtools::test(filter = "send-email")'`. This sends the same
+minimal message once through each transport. It is skipped by default. The
+custom curl transport reports stage, parsed reply code, and elapsed time; the
+`emayili` path reports only aggregate stage information because its
+detailed trace can include secrets and message data.
 
 ### X
 

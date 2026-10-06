@@ -17,7 +17,9 @@
     port = config$port %||% .dispatchr_env("DISPATCHR_EMAIL_PORT") %||% 587L,
     connecttimeout = config$connecttimeout %||% .dispatchr_env("DISPATCHR_EMAIL_CONNECTTIMEOUT") %||% 10,
     timeout = config$timeout %||% .dispatchr_env("DISPATCHR_EMAIL_TIMEOUT") %||% 30,
-    max_times = config$max_times %||% .dispatchr_env("DISPATCHR_EMAIL_MAX_TIMES") %||% 1L
+    max_times = config$max_times %||% .dispatchr_env("DISPATCHR_EMAIL_MAX_TIMES") %||% 1L,
+    smtp_debug = config$smtp_debug %||% .dispatchr_env("DISPATCHR_EMAIL_SMTP_DEBUG") %||% FALSE,
+    email_transport = config$email_transport %||% .dispatchr_env("DISPATCHR_EMAIL_TRANSPORT") %||% "emayili"
   )
 
   missing <- names(resolved)[vapply(resolved[c("from", "password")], is.null, logical(1))]
@@ -31,7 +33,35 @@
     if (length(value) != 1L || is.na(value) || !is.finite(value) || value <= 0) {
       stop(sprintf("Email config `%s` must be a positive number.", name), call. = FALSE)
     }
+    if (identical(name, "max_times") && value != floor(value)) {
+      stop("Email config `max_times` must be a positive whole number.", call. = FALSE)
+    }
     resolved[[name]] <- value
+  }
+
+  debug <- resolved$smtp_debug
+  if (is.character(debug) && length(debug) == 1L) {
+    debug <- tolower(trimws(debug))
+    if (debug %in% c("true", "1", "yes")) {
+      debug <- TRUE
+    } else if (debug %in% c("false", "0", "no")) {
+      debug <- FALSE
+    } else {
+      debug <- NA
+    }
+  }
+  if (!is.logical(debug) || length(debug) != 1L || is.na(debug)) {
+    stop("Email config `smtp_debug` must be TRUE or FALSE.", call. = FALSE)
+  }
+  resolved$smtp_debug <- debug
+
+  if (!is.character(resolved$email_transport) || length(resolved$email_transport) != 1L ||
+      is.na(resolved$email_transport) ||
+      !resolved$email_transport %in% c("curl", "emayili")) {
+    stop("Email config `email_transport` must be `curl` or `emayili`.", call. = FALSE)
+  }
+  if (identical(resolved$email_transport, "emayili") && resolved$max_times != 1) {
+    stop("The `emayili` email transport supports one attempt only; set `max_times = 1`.", call. = FALSE)
   }
 
   resolved
