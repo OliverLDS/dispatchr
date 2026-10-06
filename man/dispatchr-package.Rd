@@ -12,5 +12,10 @@ Telegram.
 \author{
 \strong{Maintainer}: Oliver Zhou \email{oliver.yxzhou@gmail.com}
 
+Authors:
+\itemize{
+  \item Oliver Zhou \email{oliver.yxzhou@gmail.com}
+}
+
 }
 \keyword{internal}

@@ -4,7 +4,14 @@
 \alias{send_email}
 \title{Send an Email}
 \usage{
-send_email(to, subject, body, html = FALSE, config = NULL)
+send_email(
+  to,
+  subject,
+  body,
+  html = FALSE,
+  config = NULL,
+  reply_to_message_id = NULL
+)
 }
 \arguments{
 \item{to}{Recipient email address or vector of email addresses.}
@@ -15,10 +22,18 @@ send_email(to, subject, body, html = FALSE, config = NULL)
 
 \item{html}{Logical. If \code{TRUE}, send the body as HTML.}
 
-\item{config}{Optional named list with SMTP configuration.}
+\item{config}{Optional named list with SMTP configuration. It may include
+\code{connecttimeout} and \code{timeout} in seconds and \code{max_times} for the maximum
+number of send attempts. Defaults are 10, 30, and 1 respectively.}
+
+\item{reply_to_message_id}{Optional \code{Message-ID} of the message being replied
+to. Sets \code{In-Reply-To} and \code{References} headers and prefixes the subject
+with \verb{Re:}. This does not retrieve the original message.}
 }
 \value{
-A \code{dispatchr_result} list with send metadata and the backend response.
+A \code{dispatchr_result} list with send metadata, backend response, and
+\code{message_id}, the ID assigned to this outgoing message. The ID is assigned
+before sending and is available even if the send fails.
 }
 \description{
 Sends an email through SMTP using \code{emayili}. The current package defaults to
@@ -32,6 +47,9 @@ resolved from environment variables:
 \item \code{DISPATCHR_EMAIL_PASSWORD}
 \item \code{DISPATCHR_EMAIL_HOST}
 \item \code{DISPATCHR_EMAIL_PORT}
+\item \code{DISPATCHR_EMAIL_CONNECTTIMEOUT} (default: 10 seconds)
+\item \code{DISPATCHR_EMAIL_TIMEOUT} (default: 30 seconds)
+\item \code{DISPATCHR_EMAIL_MAX_TIMES} (default: 1 attempt)
 }
 }
 \examples{

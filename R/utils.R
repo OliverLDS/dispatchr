@@ -57,7 +57,8 @@
                               request_summary,
                               response = NULL,
                               error = NULL,
-                              rate_limit = NULL) {
+                              rate_limit = NULL,
+                              message_id = NULL) {
   structure(
     list(
       ok = isTRUE(ok),
@@ -66,7 +67,8 @@
       request_summary = request_summary,
       response = response,
       error = error,
-      rate_limit = rate_limit
+      rate_limit = rate_limit,
+      message_id = message_id
     ),
     class = "dispatchr_result"
   )

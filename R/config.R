@@ -14,7 +14,10 @@
     from = config$from %||% .dispatchr_env("DISPATCHR_EMAIL_FROM"),
     password = config$password %||% .dispatchr_env("DISPATCHR_EMAIL_PASSWORD"),
     host = config$host %||% .dispatchr_env("DISPATCHR_EMAIL_HOST") %||% "smtp.gmail.com",
-    port = config$port %||% .dispatchr_env("DISPATCHR_EMAIL_PORT") %||% 587L
+    port = config$port %||% .dispatchr_env("DISPATCHR_EMAIL_PORT") %||% 587L,
+    connecttimeout = config$connecttimeout %||% .dispatchr_env("DISPATCHR_EMAIL_CONNECTTIMEOUT") %||% 10,
+    timeout = config$timeout %||% .dispatchr_env("DISPATCHR_EMAIL_TIMEOUT") %||% 30,
+    max_times = config$max_times %||% .dispatchr_env("DISPATCHR_EMAIL_MAX_TIMES") %||% 1L
   )
 
   missing <- names(resolved)[vapply(resolved[c("from", "password")], is.null, logical(1))]
@@ -23,6 +26,14 @@
   }
 
   resolved$port <- as.integer(resolved$port)
+  for (name in c("connecttimeout", "timeout", "max_times")) {
+    value <- suppressWarnings(as.numeric(resolved[[name]]))
+    if (length(value) != 1L || is.na(value) || !is.finite(value) || value <= 0) {
+      stop(sprintf("Email config `%s` must be a positive number.", name), call. = FALSE)
+    }
+    resolved[[name]] <- value
+  }
+
   resolved
 }
 

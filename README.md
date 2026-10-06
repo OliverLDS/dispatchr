@@ -34,6 +34,9 @@ Optional fields:
 
 - `host` defaults to `smtp.gmail.com`
 - `port` defaults to `587`
+- `connecttimeout` defaults to `10` seconds
+- `timeout` defaults to `30` seconds
+- `max_times` defaults to `1` attempt
 
 Environment variables:
 
@@ -41,6 +44,9 @@ Environment variables:
 - `DISPATCHR_EMAIL_PASSWORD`
 - `DISPATCHR_EMAIL_HOST`
 - `DISPATCHR_EMAIL_PORT`
+- `DISPATCHR_EMAIL_CONNECTTIMEOUT`
+- `DISPATCHR_EMAIL_TIMEOUT`
+- `DISPATCHR_EMAIL_MAX_TIMES`
 
 ### X
 
@@ -124,6 +130,11 @@ The main send/post functions return a structured list with:
 - `response`
 - `error`
 - `rate_limit`
+
+Email results also include `message_id`, the `Message-ID` assigned to the
+outgoing message. Pass a previously stored ID as `reply_to_message_id` to set
+the standard `In-Reply-To` and `References` headers when replying. `dispatchr`
+does not retrieve the original message.
 
 ## Scope notes
 
